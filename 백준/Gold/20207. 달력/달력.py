@@ -1,63 +1,37 @@
-def find_empty_row(planner, a, b):
-    for i, row in enumerate(planner):
-        if not any(row[a:b + 1]):
-            return i
-    return -1
-
-
-def fill_planner(planner, row_index, a, b):
-    new_row = planner[row_index][:]
+def add_count_plan(planner, a, b):
     for i in range(a, b + 1):
-        new_row[i] = True
-    planner[row_index] = new_row
-    return planner
+        planner[i] += 1
 
 
-def compute_result(planner, n):
-    total_area = 0
-    current_height = 0
-    current_width = 0
-
-    for day in range(1, 366):
-        has_schedule = False
-        max_row = 0
-
-        for row in range(n):
-            if planner[row][day]:
-                has_schedule = True
-                max_row = max(max_row, row + 1)
-
-        if has_schedule:
-            current_width += 1
-            current_height = max(current_height, max_row)
+def compute_result(planner, end_date):
+    result = 0
+    max_plan = 0
+    day_count = 0
+    for i in range(1, end_date + 1):
+        if planner[i] != 0:
+            max_plan = max(max_plan, planner[i])
+            day_count += 1
         else:
-            if current_width > 0:
-                total_area += current_height * current_width
-                current_height = 0
-                current_width = 0
+            result += day_count * max_plan
+            max_plan = 0
+            day_count = 0
 
-    if current_width > 0:
-        total_area += current_height * current_width
-
-    return total_area
+    result += day_count * max_plan
+    return result
 
 
 def solve():
     n = int(input())
-    planner = [[False] * 366 for _ in range(n)]
-    schedule = []
+    planner = [0] * 366
 
+    end_date = 0
     for _ in range(n):
         a, b = map(int, input().split())
-        schedule.append((a, b))
+        add_count_plan(planner, a, b)
 
-    schedule.sort(key=lambda x: (x[0], -x[1]))
+        end_date = max(end_date, b)
 
-    for a, b in schedule:
-        empty_row = find_empty_row(planner, a, b)
-        planner = fill_planner(planner, empty_row, a, b)
-
-    result = compute_result(planner, n)
+    result = compute_result(planner, end_date)
     print(result)
 
 
