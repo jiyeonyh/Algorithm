@@ -1,39 +1,39 @@
-import itertools
+import sys
+input = sys.stdin.readline
 
-def calculate(numbers, operators):
-    result = numbers[0]
-    for i in range(1, len(numbers)):
-        if operators[i - 1] == '+':
-            result += numbers[i]
-        elif operators[i - 1] == '-':
-            result -= numbers[i]
-        elif operators[i - 1] == '*':
-            result *= numbers[i]
-        else:
-            if result < 0:
-                result = -(-result // numbers[i])
-            else:
-                result //= numbers[i]
-    return result
+operations = [
+    lambda a, b: a + b,                           
+    lambda a, b: a - b,                           
+    lambda a, b: a * b,                           
+    lambda a, b: int(a / b) if a * b >= 0 else -(-a // b)
+]
 
-def generate_operators(op_counts, symbols=['+', '-', '*', '/']):
-    return [op for count, op in zip(op_counts, symbols) for _ in range(count)]
+min_result, max_result = 1_000_000_000, -1_000_000_000
 
-def find_max_min(numbers, op_permutations):
-    results = [calculate(numbers, operators) for operators in op_permutations]
-    return max(results), min(results)
+def dfs(depth, result, op_counts, numbers):
+    global min_result, max_result
+
+    if depth == len(numbers) - 1:
+        min_result = min(min_result, result)
+        max_result = max(max_result, result)
+        return
+
+    for i in range(4):
+        if op_counts[i] > 0:
+            op_counts[i] -= 1
+            dfs(depth+1, operations[i](result, numbers[depth+1]), op_counts, numbers)
+            op_counts[i] += 1
+
 
 def solve():
     n = int(input())
     numbers = list(map(int, input().split()))
-    op_count = list(map(int, input().split()))
+    op_counts = list(map(int, input().split()))
 
-    op_arr = generate_operators(op_count)
-    op_permutations = set(itertools.permutations(op_arr, n-1))
-    max_result, min_result = find_max_min(numbers, op_permutations)
+    dfs(0, numbers[0], op_counts[:], numbers)
 
     print(max_result)
     print(min_result)
-
+    
 
 solve()
