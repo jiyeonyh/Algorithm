@@ -1,6 +1,10 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;;
+import java.util.Scanner;
+import java.util.StringTokenizer;;
 
 public class Main {
 
@@ -28,24 +32,28 @@ public class Main {
         }
         return -1;
     }
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) throws IOException{
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
         Queue<Pair<Integer, Integer>> printerQueue = new LinkedList<>();
 
-        int t = scanner.nextInt();
+        int t = Integer.parseInt(br.readLine());
         for (int i = 0; i < t; i++){
-            int n = scanner.nextInt();
-            int m = scanner.nextInt();
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int n = Integer.parseInt(st.nextToken());
+            int m = Integer.parseInt(st.nextToken());
+            st = new StringTokenizer(br.readLine());
             for (int j = 0; j < n; j++) {
-                int priority = scanner.nextInt();
+                int priority = Integer.parseInt(st.nextToken());
                 printerQueue.add(new Pair<>(j, priority));
             }
 
             int result = printOrder(n, m, printerQueue);
-            System.out.println(result);
+            sb.append(result).append("\n");
             printerQueue.clear();
         }
-        scanner.close();
+        System.out.println(sb);
     }
 
     public static class Pair<K, V> {
