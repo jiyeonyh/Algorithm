@@ -1,33 +1,28 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Scanner;
 import java.util.StringTokenizer;;
 
 public class Main {
 
-    public static int printOrder(int n, int m, Queue<Pair<Integer, Integer>> printerQueue) {
+    public static int printOrder(int n, int m, Queue<Pair<Integer, Integer>> printerQueue, PriorityQueue<Integer> priorityQueue) {
         int order = 0;
         while (!printerQueue.isEmpty()) {
             Pair<Integer, Integer> current = printerQueue.poll();
-            boolean hasHigherPriority = false;
 
-            for (Pair<Integer, Integer> p : printerQueue) {
-                if (p.getValue() > current.getValue()) {
-                    hasHigherPriority = true;
-                    break;
-                }
-            }
-
-            if (hasHigherPriority) {
-                printerQueue.add(current);
-            } else {
+            if (priorityQueue.peek() == current.getValue()) {
+                priorityQueue.poll();
                 order++;
+
                 if (current.getKey() == m) {
                     return order;
                 }
+            } else {
+                printerQueue.add(current);
             }
         }
         return -1;
@@ -36,7 +31,6 @@ public class Main {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        Queue<Pair<Integer, Integer>> printerQueue = new LinkedList<>();
 
         int t = Integer.parseInt(br.readLine());
         for (int i = 0; i < t; i++){
@@ -44,14 +38,17 @@ public class Main {
             int n = Integer.parseInt(st.nextToken());
             int m = Integer.parseInt(st.nextToken());
             st = new StringTokenizer(br.readLine());
+
+            Queue<Pair<Integer, Integer>> printerQueue = new LinkedList<>();
+            PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(Collections.reverseOrder());
             for (int j = 0; j < n; j++) {
                 int priority = Integer.parseInt(st.nextToken());
                 printerQueue.add(new Pair<>(j, priority));
+                priorityQueue.add(priority);
             }
 
-            int result = printOrder(n, m, printerQueue);
+            int result = printOrder(n, m, printerQueue, priorityQueue);
             sb.append(result).append("\n");
-            printerQueue.clear();
         }
         System.out.println(sb);
     }
